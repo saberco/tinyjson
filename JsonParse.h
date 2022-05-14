@@ -22,14 +22,14 @@ private:
     void parse_num();
     void parse_str();
     void parse_str_raw(std::string& tmp);
-    void parse_hex4(const char* &p, unsigned &u)
-    void parse_encode_utf8(std::string &s, unsigned u) const noexcept;
+    void parse_hex4(const char* &p, unsigned &u);
+    void parse_encode_utf8(std::string &str, unsigned u) const noexcept;
     void parse_arr();
     void parse_obj();
 
 private:
     Value& m_val;
-    const char * cur;
+    const char * m_cur;
 
 };
 

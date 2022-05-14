@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <string>
 #include "JsonValue.h"
+#include "JsonParse.h"
 
 
 namespace cocolay{
@@ -250,7 +251,7 @@ size_t Value::get_obj_key_size(size_t index) const noexcept {
 }
 
 void Value::parse(const std::string &content){
-
+    Parser(*this, content);
 }
 
 }

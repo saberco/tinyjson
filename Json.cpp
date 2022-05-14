@@ -2,6 +2,7 @@
 #include "Json.h"
 #include <vector>
 #include "JsonValue.h"
+#include"JsonException.h"
 
 namespace cocolay{
 
@@ -146,7 +147,14 @@ bool operator!=(const Json& obj_1, const Json& obj_2) noexcept {
 }
 
 void Json::parse(const std::string& content, std::string& status) noexcept {
+    try{
+        parse(content);
+        status = "parse ok";
+    }catch(const m_Json::Exception & msg){
+        status = msg.what();
+    }catch(...){
 
+    }
 }
 
 void Json::parse(const std::string& content) {
