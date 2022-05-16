@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <math.h>
 #include <stdlib.h>
+#include <iostream>
 #include "JsonException.h"
 #include "JsonParse.h"
 
@@ -32,7 +33,7 @@ Parser::Parser(Value & val, const std::string & content)
 
 //解析空格、空行，操作为直接跳过
 void Parser::parse_whitespace() noexcept {
-    while(*m_cur==' ' || *m_cur=='\t' || *m_cur == '\n' || *m_cur == '\r') ++m_cur;
+    while(*m_cur == ' ' || *m_cur == '\t' || *m_cur == '\n' || *m_cur == '\r')++m_cur;
 }
 
 //解析值
@@ -87,7 +88,7 @@ void Parser::parse_literal(const char * literal, m_Json::JSON_TYPE t) {
     //遇见'\0'停止运行
     for(i=0;literal[i+1];++i){
         if(m_cur[i]!=literal[i+1]){
-            throw (Exception("parse invalid value"));
+            throw (Exception("parse invalid value literal"));
         }
     }
     m_cur += i;
@@ -99,19 +100,19 @@ void Parser::parse_num() {
     //负数和前缀0,因为序列化的json是字符串形式
     if(*p == '-')++p;
     if(*p == '0')++p;
-    else{
-        if(!isdigit(*p)) throw (Exception("parse invalid value"));
+    else{    
+        if(!isdigit(*p)) throw (Exception("parse invalid value num"));
         while(isdigit(*++p));
     }
     if(*p == '.'){
-        if(!isdigit(*++p)) throw (Exception("parse invalid value"));
+        if(!isdigit(*++p)) throw (Exception("parse invalid value num"));
         while(isdigit(*++p));
     }
     //支持科学计数法
-    if(*p == 'e' || *p == 'e'){
+    if(*p == 'e' || *p == 'E'){
         ++p;
         if(*p=='+'||*p=='-')++p;
-        if(!isdigit(*p))throw (Exception("parse invalid value"));
+        if(!isdigit(*p))throw (Exception("parse invalid value num"));
         while(isdigit(*++p)) ;
     }
     errno = 0;
@@ -146,6 +147,11 @@ void Parser::parse_str_raw(std::string & tmp) {
             case '\"':
             {
                 tmp+='\"';
+                break;
+            }
+            case '/':
+            {
+                tmp+='/';
                 break;
             }
             case '\\':
@@ -285,7 +291,7 @@ void Parser::parse_arr() {
         }
         else{
             m_val.set_type(m_Json::Null);
-            throw(Exception("parse miss comma or square bracket"));
+            throw(Exception("parse miss comma or square bracket arr"));
         }
     }
 }
@@ -313,7 +319,7 @@ void Parser::parse_obj() {
             throw(Exception("parse key error"));
         }
         parse_whitespace();
-        if(*m_cur != ':')throw(Exception("parse miss colon"));
+        if(*m_cur++ != ':')throw(Exception("parse miss colon"));
         parse_whitespace();
         try{
             parse_value();
@@ -334,7 +340,7 @@ void Parser::parse_obj() {
             return;
         }else{
             m_val.set_type(m_Json::Null);
-            throw(Exception("parse miss comma or square bracket"));
+            throw(Exception("parse miss comma or square bracket obj"));
         }
     }
 }
